@@ -2,6 +2,9 @@ import {
   ActivityIndicator,
   Keyboard,
   StyleSheet,
+  LayoutAnimation,
+  Platform,
+  UIManager,
   Text,
   TextInput,
   TouchableOpacity,
@@ -23,18 +26,18 @@ export default function AuthScreen() {
   const [confirmPassword, setConfirmPassword] = useState("");
 
   useEffect(() => {
-    return () => {setLoading(false);
+    return () => {
+      setLoading(false);
       resetTextInputs();
-    }
-    
+    };
   }, []);
 
-  function resetTextInputs(){
+  function resetTextInputs() {
     setUsername("");
     setPassword("");
     setConfirmPassword("");
   }
-  
+
   async function signUp() {
     setLoading(true);
     if (password != confirmPassword) {
@@ -53,6 +56,9 @@ export default function AuthScreen() {
       } catch (error) {
         console.log("Failed logging in. Error: ", error.response);
         setErrorText(error.response.data.description);
+      } finally {
+        setLoading(false);
+        LayoutAnimation.spring();
       }
     }
   }
@@ -70,8 +76,10 @@ export default function AuthScreen() {
     } catch (error) {
       console.log(error.response);
       setErrorText(error.response.data.description);
+    } finally {
+      setLoading(false);
+      LayoutAnimation.spring();
     }
-    setLoading(false);
   }
   return (
     <View style={styles.container}>
@@ -106,8 +114,10 @@ export default function AuthScreen() {
       )}
 
       <TouchableOpacity
-        style={styles.button}
+        style={loading ? styles.buttonLoading : styles.button}
         onPress={async () => {
+          LayoutAnimation.spring();
+          setErrorText("");
           isLoginScreen ? await login() : await signUp();
         }}
       >
@@ -120,11 +130,12 @@ export default function AuthScreen() {
         )}
       </TouchableOpacity>
       <TouchableOpacity
-        onPress=
-        {() => {
+        onPress={() => {
+          LayoutAnimation.easeInEaseOut();
           setIsLoginScreen(!isLoginScreen);
           setErrorText("");
-        }}>
+        }}
+      >
         <Text style={styles.switchText}>
           {isLoginScreen
             ? "No account? Sign up now."
@@ -169,6 +180,12 @@ const styles = StyleSheet.create({
     backgroundColor: "black",
     borderRadius: 15,
     width: "100%",
+  },
+  buttonLoading: {
+    backgroundColor: "black",
+    borderRadius: 15,
+    width: "20%",
+    marginHorizontal: "40%",
   },
   buttonText: {
     textAlign: "center",
