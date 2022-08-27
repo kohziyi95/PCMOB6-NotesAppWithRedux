@@ -28,7 +28,6 @@ export default function AuthScreen() {
   useEffect(() => {
     return () => {
       setLoading(false);
-      resetTextInputs();
     };
   }, []);
 
@@ -71,6 +70,7 @@ export default function AuthScreen() {
         username,
         password,
       });
+      resetTextInputs();
       await AsyncStorage.setItem("token", response.data.access_token);
       navigation.navigate(HOME_STACK);
     } catch (error) {
