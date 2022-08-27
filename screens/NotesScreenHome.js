@@ -11,6 +11,7 @@ import { useNavigation } from "@react-navigation/native";
 import { useDispatch, useSelector } from "react-redux";
 import { API_STATUS, NOTES_SCREEN } from "../constants";
 import { fetchPosts } from "../features/notesSlice";
+import Animated, { SlideInLeft, SlideOutRight } from "react-native-reanimated";
 
 // const posts = [
 //   {
@@ -35,17 +36,22 @@ export default function NotesScreenHome() {
 
   function renderItem({ item }) {
     return (
-      <TouchableOpacity
-        style={styles.noteCard}
-        onPress={() => {
-          navigation.navigate(NOTES_SCREEN.Details, item);
-        }}
+      <Animated.View
+        entering={SlideInLeft.delay(item.index * 100)}
+        exiting={SlideOutRight.delay(300)}
       >
-        <Text style={styles.noteCardTitle}>{item.title}</Text>
-        <Text style={styles.noteCardBodyText}>
-          {item.content.substring(0, 120)}
-        </Text>
-      </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.noteCard}
+          onPress={() => {
+            navigation.navigate(NOTES_SCREEN.Details, item);
+          }}
+        >
+          <Text style={styles.noteCardTitle}>{item.title}</Text>
+          <Text style={styles.noteCardBodyText}>
+            {item.content.substring(0, 120)}
+          </Text>
+        </TouchableOpacity>
+      </Animated.View>
     );
   }
   return (
